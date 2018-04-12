@@ -239,7 +239,7 @@ class TestCompoundLinearModel(TestModel):
         model.set_break_points(10)
         model.get_model_report()
 
-        self._save_test_case_data(model)
+        # self._save_test_case_data(model)
 
     def test_predict_response_variable_non_transformed_response(self):
         """Test CompoundLinearModel.predict_response_variable() with a non-transformed response variable"""
