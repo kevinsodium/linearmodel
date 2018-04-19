@@ -63,7 +63,7 @@ class TestDataManagerGetData(unittest.TestCase):
 
         data_start = 0.
         data_stop = 10.
-        index_start = index_start = np.datetime64('2018-01-01')
+        index_start = np.datetime64('2018-01-01')
         index_step = np.timedelta64(15*60*1000, 'ms')
         num_rows = 7
         index_stop = index_start + index_step * num_rows
