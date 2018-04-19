@@ -1,5 +1,6 @@
 import copy
 
+import numpy as np
 import pandas as pd
 
 
@@ -66,27 +67,6 @@ class HDFio:
         list_series = pd.Series(data=value)
         list_series.to_hdf(store, key)
 
-    @classmethod
-    def _read_hdf(cls, member_list, store, key):
-        """
-
-        :param member_list:
-        :param store:
-        :param key:
-        :return:
-        """
-
-        result = cls.__new__(cls)
-        for member_name in member_list:
-            member_key = key + '/' + member_name
-            try:
-                member_value = pd.read_hdf(store, member_key)
-            except TypeError:
-                member_value = cls.read_hdf(store, member_key)
-            setattr(result, member_name, member_value)
-
-        return result
-
     @staticmethod
     def _scalar_from_hdf(store, key):
         """
@@ -111,30 +91,6 @@ class HDFio:
         scalar_series.to_hdf(store, key)
 
     @classmethod
-    def _to_hdf(cls, item_dict, store, key):
-        """Writes data from item_dict to an HDF file
-
-        :param item_dict: Dictionary containing items to write to HDF
-        :param store: Open HDFStore object
-        :param key: Identifier for the top-level group in the HDF file
-        :return: None
-        """
-        if not store.is_open:
-            raise IOError('The HDFStore must be open')
-
-        for k, v in item_dict.items():
-            # create the next-level key
-            next_hdf_key = key + '/' + k
-
-            # if the item is a dictionary, call this method to write it
-            if isinstance(v, dict):
-                cls._to_hdf(v, store, next_hdf_key)
-
-            # otherwise use the item's to_hdf method
-            else:
-                v.to_hdf(store, next_hdf_key)
-
-    @classmethod
     def read_hdf(cls, store, attribute_types, key):
         """
 
@@ -152,6 +108,8 @@ class HDFio:
                 attributes[k] = value_type(cls._scalar_from_hdf(store, next_key))
             elif value_type in cls._list_types:
                 attributes[k] = value_type(cls._list_from_hdf(store, next_key))
+            elif value_type is np.ndarray:
+                attributes[k] = np.array(cls._list_from_hdf(store, next_key))
             elif value_type is dict:
                 attributes[k] = cls._dict_from_hdf(store, next_key)
             else:
@@ -180,5 +138,7 @@ class HDFio:
                 cls._list_to_hdf(store, v, next_key)
             elif isinstance(v, dict):
                 cls._dict_to_hdf(store, v, next_key)
+            elif isinstance(v, np.ndarray):
+                cls._list_to_hdf(store, v, next_key)
             else:
                 raise TypeError("Unable to handle type {}".format(v.__class__.__name__))
