@@ -227,6 +227,50 @@ class TestDataManagerInit(unittest.TestCase):
         # make sure the DataManager's data and DataFrame are equal
         pd.testing.assert_frame_equal(data_manager.get_data(), df)
 
+    def test_init_read_tab_delimited_datetime_index_separate(self):
+
+        test_data_file_path_results = os.path.join(current_path, 'data', 'model', 'TestDataframeTimestamp',
+                                                   'test_timestamp_results.txt')
+
+        test_data_file_path_test = os.path.join(current_path, 'data', 'model', 'TestDataframeTimestamp',
+                                                   'test_timestamp_separate.txt')
+
+        df = pd.read_table(test_data_file_path_results, sep='\t',)
+        df = df.set_index(pd.DatetimeIndex(df['DateTime']))
+
+        df = df.drop(df.columns[0], axis=1)
+
+        data_manager = DataManager.read_tab_delimited_data(test_data_file_path_test)
+        print(data_manager.get_data())
+        pd.testing.assert_frame_equal(data_manager.get_data(), df)
+
+    def test_init_read_tab_delimited_datetime_index_date_time(self):
+        test_data_file_path_results = os.path.join(current_path, 'data', 'model', 'TestDataframeTimestamp',
+                                                   'test_timestamp_results.txt')
+
+        test_data_file_path_test = os.path.join(current_path, 'data', 'model', 'TestDataframeTimestamp',
+                                                   'test_timestamp_date_time.txt')
+
+        df = pd.read_table(test_data_file_path_results, sep='\t',)
+        df = df.set_index(pd.DatetimeIndex(df['DateTime']))
+        df = df.drop(df.columns[0], axis=1)
+        data_manager = DataManager.read_tab_delimited_data(test_data_file_path_test)
+
+        pd.testing.assert_frame_equal(data_manager.get_data(), df)
+
+    def test_init_read_tab_delimited_datetime_index_datetime(self):
+        test_data_file_path_results = os.path.join(current_path, 'data', 'model', 'TestDataframeTimestamp',
+                                                   'test_timestamp_results.txt')
+
+        test_data_file_path_test = os.path.join(current_path, 'data', 'model', 'TestDataframeTimestamp',
+                                                'test_timestamp_datetime.txt')
+
+        df = pd.read_table(test_data_file_path_results, sep='\t',)
+        df = df.set_index(pd.DatetimeIndex(df['DateTime']))
+        df = df.drop(df.columns[0], axis=1)
+        data_manager = DataManager.read_tab_delimited_data(test_data_file_path_test)
+
+        pd.testing.assert_frame_equal(data_manager.get_data(), df)
 
 if __name__ == '__main__':
     unittest.main()
