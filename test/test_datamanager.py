@@ -79,6 +79,27 @@ class TestDataManagerGetData(unittest.TestCase):
         pd.testing.assert_frame_equal(dm.get_data(index_step=index_step), df2)
 
 
+class TestDataManagerGetvariable(unittest.TestCase):
+
+    def test_get_variable_observation_nearest(self):
+
+        test_data_file_path_init = os.path.join(current_path, 'data', 'model', 'TestMatchMethod',
+                                                'test_match_method_nearest.txt')
+        data_df = pd.read_table(test_data_file_path_init, sep='\t', index_col=0, parse_dates=True)
+        data_manager = DataManager(data_df)
+        test = data_manager.get_variable_observation(variable_name='a', time=data_df.index, match_method='nearest')
+        pd.testing.assert_series_equal(data_df['a'], test)
+
+    def test_get_variable_observation_mean(self):
+
+        test_data_file_path_init = os.path.join(current_path, 'data', 'model', 'TestMatchMethod',
+                                                'test_match_method_mean.txt')
+        data_df = pd.read_table(test_data_file_path_init, sep='\t', index_col=0, parse_dates=True)
+        data_manager = DataManager(data_df)
+        test = data_manager.get_variable_observation(variable_name='b', time=data_df.index)
+        pd.testing.assert_series_equal(data_df['b'], test)
+
+
 class TestDataManager(unittest.TestCase):
     """Test miscellaneous features of the DataManager class"""
 
@@ -237,11 +258,8 @@ class TestDataManagerInit(unittest.TestCase):
 
         df = pd.read_table(test_data_file_path_results, sep='\t',)
         df = df.set_index(pd.DatetimeIndex(df['DateTime']))
-
         df = df.drop(df.columns[0], axis=1)
-
         data_manager = DataManager.read_tab_delimited_data(test_data_file_path_test)
-        print(data_manager.get_data())
         pd.testing.assert_frame_equal(data_manager.get_data(), df)
 
     def test_init_read_tab_delimited_datetime_index_date_time(self):
@@ -271,6 +289,8 @@ class TestDataManagerInit(unittest.TestCase):
         data_manager = DataManager.read_tab_delimited_data(test_data_file_path_test)
 
         pd.testing.assert_frame_equal(data_manager.get_data(), df)
+
+
 
 if __name__ == '__main__':
     unittest.main()
